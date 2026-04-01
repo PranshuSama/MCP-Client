@@ -87,5 +87,42 @@ async def ceil(n: float) -> dict:
     return {"operation": "ceil", "n": n, "result": result}
 
 
+@mcp.custom_route("/", methods=["GET"])
+async def root(request):
+    """Browser-friendly health check page."""
+    return HTMLResponse("""
+    <html>
+        <head>
+            <title>MCP Math Server</title>
+            <style>
+                body { font-family: -apple-system, system-ui, sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                .card { background: #1e293b; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #334155; text-align: center; }
+                .status { color: #22c55e; font-weight: bold; margin-bottom: 1rem; }
+                .url { background: #0f172a; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; color: #38bdf8; }
+                h1 { margin-top: 0; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="status">● SERVER IS LIVE</div>
+                <h1>MCP Math Server</h1>
+                <p>To use this server, connect your MCP client to:</p>
+                <div class="url">https://""" + request.headers.get("host", "your-url") + """/mcp</div>
+                <p style="color: #94a3b8; font-size: 0.8rem; margin-top: 2rem;">Note: Browsers use GET requests. MCP uses POST. This page confirms the service is running.</p>
+            </div>
+        </body>
+    </html>
+    """)
+
+
 if __name__ == "__main__":
-    mcp.run()
+    # Local default: stdio. For cloud deploy, set FASTMCP_TRANSPORT=streamable-http.
+    transport = os.getenv("FASTMCP_TRANSPORT", "stdio")
+
+    if transport == "streamable-http":
+        host = os.getenv("HOST", "0.0.0.0")
+        port = int(os.getenv("PORT", "8000"))
+        path = os.getenv("MCP_PATH", "/mcp")
+        mcp.run(transport="streamable-http", host=host, port=port, path=path)
+    else:
+        mcp.run(transport="stdio")
