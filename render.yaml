@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: mcp-expense-server
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python mcp-expense-server.py
+    envVars:
+      - key: FASTMCP_TRANSPORT
+        value: streamable-http
+      - key: HOST
+        value: 0.0.0.0
+      - key: MCP_PATH
+        value: /mcp
+      - key: PYTHON_VERSION
+        value: 3.11.6
