@@ -6,6 +6,8 @@ Provides arithmetic and mathematical calculation tools via MCP protocol.
 
 from fastmcp import FastMCP
 import math
+import os
+from starlette.responses import HTMLResponse
 
 # Create FastMCP server instance
 mcp = FastMCP("Math Server")
